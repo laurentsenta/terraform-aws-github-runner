@@ -6,11 +6,6 @@ custom_shell_commands = [
 ]
 
 post_install_custom_shell_commands = [
-  "TMPFOLDER=`mktemp -d`",
-  "git clone https://github.com/testground/testground.git $TMPFOLDER",
-  "cd $TMPFOLDER",
-  "make install",
 ]
 
-root_volume_size_gb = 16
-name_suffix = "testground"
+name_suffix = "go1.18"

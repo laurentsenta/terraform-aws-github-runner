@@ -13,6 +13,12 @@ variable "runner_version" {
   default     = "2.286.1"
 }
 
+variable "name_suffix" {
+  description = "The suffix to append to the name of the runner"
+  type        = string
+  default     = "basic"
+}
+
 variable "region" {
   description = "The region to build the image in"
   type        = string
@@ -85,7 +91,13 @@ variable "post_install_custom_shell_commands" {
 }
 
 source "amazon-ebs" "githubrunner" {
-  ami_name                    = "github-runner-ubuntu-focal-amd64-${formatdate("YYYYMMDDhhmm", timestamp())}"
+  ami_name                    = join("-", [
+    "github-runner",
+    "ubuntu-focal",
+    "amd64",
+    formatdate("YYYYMMDDhhmm", timestamp()),
+    var.name_suffix
+  ])
   instance_type               = var.instance_type
   region                      = var.region
   security_group_id           = var.security_group_id
