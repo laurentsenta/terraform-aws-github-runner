@@ -78,6 +78,12 @@ variable "custom_shell_commands" {
   default     = []
 }
 
+variable "post_install_custom_shell_commands" {
+  description = "Additional commands to run on the EC2 instance, to customize the instance, like installing packages"
+  type        = list(string)
+  default     = []
+}
+
 source "amazon-ebs" "githubrunner" {
   ami_name                    = "github-runner-ubuntu-focal-amd64-${formatdate("YYYYMMDDhhmm", timestamp())}"
   instance_type               = var.instance_type
@@ -182,4 +188,24 @@ build {
     ]
   }
 
+  provisioner "shell" {
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    expect_disconnect = true
+    inline = [
+      # force a reboot so the docker group is effective with the ubuntu user.
+      "sudo reboot"
+    ]
+  }
+
+  provisioner "shell" {
+    pause_before = "15s"
+    environment_vars = [
+      "DEBIAN_FRONTEND=noninteractive"
+    ]
+    inline = concat([
+      "echo custom post install step"
+    ], var.post_install_custom_shell_commands)
+  }
 }
